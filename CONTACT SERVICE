@@ -1,0 +1,271 @@
+# Create contract service
+contract_service_content = """
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib.units import inch
+from datetime import datetime
+import json
+
+class ContractService:
+    def __init__(self):
+        self.styles = getSampleStyleSheet()
+        self.contract_templates = {
+            'web_development': {
+                'title': 'Web Development Services Agreement',
+                'scope': 'Design, development, and delivery of website as per specifications',
+                'deliverables': ['Website design mockups', 'Responsive website', 'Content management system', 'Documentation'],
+                'timeline': '4-6 weeks from project start',
+                'payment_terms': '50% upfront, 50% upon completion',
+                'revisions': 'Up to 3 rounds of revisions included'
+            },
+            'mobile_app': {
+                'title': 'Mobile Application Development Agreement',
+                'scope': 'Development of mobile application for iOS/Android platforms',
+                'deliverables': ['App wireframes', 'Native mobile app', 'App store submission', 'User manual'],
+                'timeline': '8-12 weeks from project start',
+                'payment_terms': '40% upfront, 40% at milestone, 20% upon delivery',
+                'revisions': 'Up to 2 rounds of revisions included'
+            },
+            'graphic_design': {
+                'title': 'Graphic Design Services Agreement',
+                'scope': 'Creation of graphic design materials as per client requirements',
+                'deliverables': ['Design concepts', 'Final artwork files', 'Source files', 'Style guide'],
+                'timeline': '2-3 weeks from project start',
+                'payment_terms': '50% upfront, 50% upon completion',
+                'revisions': 'Up to 4 rounds of revisions included'
+            },
+            'content_writing': {
+                'title': 'Content Writing Services Agreement',
+                'scope': 'Creation of written content as per client specifications',
+                'deliverables': ['Content drafts', 'Final edited content', 'SEO optimization', 'Style guide'],
+                'timeline': '1-2 weeks from project start',
+                'payment_terms': '50% upfront, 50% upon completion',
+                'revisions': 'Up to 2 rounds of revisions included'
+            },
+            'consulting': {
+                'title': 'Consulting Services Agreement',
+                'scope': 'Professional consulting services in specified domain',
+                'deliverables': ['Analysis report', 'Recommendations', 'Implementation plan', 'Follow-up support'],
+                'timeline': 'As per project scope',
+                'payment_terms': 'Monthly retainer or hourly rates',
+                'revisions': 'Ongoing refinements included'
+            }
+        }
+    
+    def generate_contract_number(self):
+        \"\"\"Generate unique contract number\"\"\"
+        timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+        return f"CONTRACT-{timestamp}"
+    
+    def get_contract_template(self, project_type):
+        \"\"\"Get contract template based on project type\"\"\"
+        return self.contract_templates.get(project_type.lower(), self.contract_templates['consulting'])
+    
+    def generate_contract_content(self, client_data, project_data, template_type='consulting'):
+        \"\"\"Generate complete contract content\"\"\"
+        try:
+            template = self.get_contract_template(template_type)
+            contract_number = self.generate_contract_number()
+            
+            contract_content = f\"\"\"
+{template['title'].upper()}
+
+CONTRACT NUMBER: {contract_number}
+DATE: {datetime.now().strftime('%B %d, %Y')}
+
+PARTIES:
+This agreement is between:
+
+FREELANCER:
+[Your Name]
+[Your Address]
+[Your Email]
+[Your Phone]
+
+CLIENT:
+{client_data.get('name', 'N/A')}
+{client_data.get('company', '')}
+{client_data.get('email', 'N/A')}
+{client_data.get('phone', '')}
+{client_data.get('address', '')}
+
+PROJECT DETAILS:
+Project Title: {project_data.get('title', 'N/A')}
+Project Description: {project_data.get('description', 'N/A')}
+Project Budget: KES {project_data.get('budget', 0):,.2f}
+
+SCOPE OF WORK:
+{template['scope']}
+
+DELIVERABLES:
+{chr(10).join([f"• {item}" for item in template['deliverables']])}
+
+TIMELINE:
+{template['timeline']}
+Start Date: {project_data.get('start_date', 'To be determined')}
+End Date: {project_data.get('end_date', 'To be determined')}
+
+PAYMENT TERMS:
+{template['payment_terms']}
+Total Project Value: KES {project_data.get('budget', 0):,.2f}
+
+REVISIONS:
+{template['revisions']}
+
+STANDARD TERMS AND CONDITIONS:
+
+1. INTELLECTUAL PROPERTY:
+   - All work products created under this agreement shall be owned by the Client upon full payment.
+   - The Freelancer retains the right to use general knowledge and skills acquired during the project.
+
+2. CONFIDENTIALITY:
+   - Both parties agree to maintain confidentiality of all proprietary information shared during the project.
+   - This obligation continues for 2 years after project completion.
+
+3. TERMINATION:
+   - Either party may terminate this agreement with 7 days written notice.
+   - Client shall pay for all work completed up to the termination date.
+
+4. LIABILITY:
+   - The Freelancer's liability is limited to the total project value.
+   - The Freelancer is not liable for indirect or consequential damages.
+
+5. FORCE MAJEURE:
+   - Neither party shall be liable for delays caused by circumstances beyond their control.
+
+6. DISPUTE RESOLUTION:
+   - Any disputes shall be resolved through mediation, then arbitration if necessary.
+   - This agreement is governed by the laws of Kenya.
+
+7. COMMUNICATION:
+   - All project communication shall be conducted via email or agreed platforms.
+   - Response time: 24-48 hours for non-urgent matters.
+
+8. CHANGES:
+   - Any changes to this agreement must be in writing and signed by both parties.
+   - Additional work beyond the original scope will be quoted separately.
+
+ACCEPTANCE:
+By signing below, both parties agree to the terms and conditions of this contract.
+
+FREELANCER:                          CLIENT:
+_________________                    _________________
+[Your Name]                         {client_data.get('name', 'N/A')}
+Date: ___________                   Date: ___________
+
+This contract is valid for 30 days from the date of issue.
+\"\"\"
+            
+            return {
+                'success': True,
+                'contract_number': contract_number,
+                'content': contract_content,
+                'template_used': template_type
+            }
+            
+        except Exception as e:
+            return {
+                'success': False,
+                'error': str(e)
+            }
+    
+    def generate_contract_pdf(self, contract_data, save_path=None):
+        \"\"\"Generate PDF contract\"\"\"
+        try:
+            # Create filename if not provided
+            if not save_path:
+                save_path = f"contract_{contract_data['contract_number']}.pdf"
+            
+            # Create PDF document
+            doc = SimpleDocTemplate(save_path, pagesize=letter,
+                                  rightMargin=72, leftMargin=72,
+                                  topMargin=72, bottomMargin=18)
+            
+            story = []
+            
+            # Split content into paragraphs
+            content_lines = contract_data['content'].split('\n')
+            
+            for line in content_lines:
+                if line.strip():
+                    if line.isupper() and len(line) > 10:
+                        # Main headings
+                        para = Paragraph(f"<b>{line.strip()}</b>", self.styles['Heading1'])
+                    elif line.endswith(':') and not line.startswith(' '):
+                        # Subheadings
+                        para = Paragraph(f"<b>{line.strip()}</b>", self.styles['Heading2'])
+                    else:
+                        # Regular text
+                        para = Paragraph(line.strip(), self.styles['Normal'])
+                    
+                    story.append(para)
+                    story.append(Spacer(1, 6))
+                else:
+                    story.append(Spacer(1, 12))
+            
+            # Build PDF
+            doc.build(story)
+            
+            return {
+                'success': True,
+                'file_path': save_path,
+                'message': 'Contract PDF generated successfully'
+            }
+            
+        except Exception as e:
+            return {
+                'success': False,
+                'error': str(e)
+            }
+    
+    def create_amendment(self, original_contract, changes):
+        \"\"\"Create contract amendment\"\"\"
+        try:
+            amendment_content = f\"\"\"
+CONTRACT AMENDMENT
+
+Original Contract Number: {original_contract.get('contract_number', 'N/A')}
+Amendment Date: {datetime.now().strftime('%B %d, %Y')}
+
+CHANGES TO ORIGINAL CONTRACT:
+
+{changes}
+
+All other terms and conditions of the original contract remain in full effect.
+
+ACCEPTANCE:
+By signing below, both parties agree to this amendment.
+
+FREELANCER:                          CLIENT:
+_________________                    _________________
+[Your Name]                         [Client Name]
+Date: ___________                   Date: ___________
+\"\"\"
+            
+            return {
+                'success': True,
+                'amendment_content': amendment_content
+            }
+            
+        except Exception as e:
+            return {
+                'success': False,
+                'error': str(e)
+            }
+    
+    def get_contract_templates_list(self):
+        \"\"\"Get list of available contract templates\"\"\"
+        return [
+            {'key': key, 'title': template['title']} 
+            for key, template in self.contract_templates.items()
+        ]
+
+# Initialize service
+contract_service = ContractService()
+"""
+
+with open("freelancers_bot/services/contract_service.py", "w") as f:
+    f.write(contract_service_content)
+
+print("Contract service created!")
