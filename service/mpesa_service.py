@@ -1,4 +1,4 @@
-# Create M-Pesa service integration
+# Create M-Pesa service integration.
 mpesa_service_content = """
 import requests
 import base64
