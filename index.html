@@ -1,0 +1,280 @@
+# Create base HTML template
+base_template = """<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Freelancers Bot{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        .sidebar {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.8);
+            border-radius: 8px;
+            margin: 2px 0;
+            transition: all 0.3s;
+        }
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            color: white;
+            background-color: rgba(255,255,255,0.1);
+        }
+        .stats-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .stats-card.blue {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .stats-card.green {
+            background: linear-gradient(135deg, #f093fb 0%, #43e97b 100%);
+        }
+        .stats-card.orange {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+        .btn-custom {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            border-radius: 8px;
+            padding: 0.5rem 1.5rem;
+            transition: all 0.3s;
+        }
+        .btn-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+        .table-custom {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .navbar-custom {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .content-wrapper {
+            background: #f8f9fa;
+            min-height: 100vh;
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <div class="text-center mb-4">
+                        <h4 class="text-white">
+                            <i class="fas fa-robot"></i> Freelancers Bot
+                        </h4>
+                    </div>
+                    
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}" href="{{ url_for('dashboard') }}">
+                                <i class="fas fa-tachometer-alt"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'clients' %}active{% endif %}" href="{{ url_for('clients') }}">
+                                <i class="fas fa-users"></i> Clients
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'projects' %}active{% endif %}" href="{{ url_for('projects') }}">
+                                <i class="fas fa-project-diagram"></i> Projects
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'invoices' %}active{% endif %}" href="{{ url_for('invoices') }}">
+                                <i class="fas fa-file-invoice"></i> Invoices
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'contracts' %}active{% endif %}" href="{{ url_for('contracts') }}">
+                                <i class="fas fa-file-contract"></i> Contracts
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="showAITools()">
+                                <i class="fas fa-brain"></i> AI Tools
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="showPaymentTools()">
+                                <i class="fas fa-credit-card"></i> Payments
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 content-wrapper">
+                <!-- Top navbar -->
+                <div class="navbar navbar-custom px-0 mb-4">
+                    <div class="d-flex justify-content-between w-100 align-items-center py-3">
+                        <h2 class="h4 mb-0">{% block page_title %}Dashboard{% endblock %}</h2>
+                        <div class="d-flex align-items-center">
+                            <span class="me-3">Welcome, Freelancer!</span>
+                            <img src="https://via.placeholder.com/40" class="rounded-circle" alt="Profile">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Page content -->
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Axios for API calls -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    
+    <!-- AI Tools Modal -->
+    <div class="modal fade" id="aiToolsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">AI Tools</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title"><i class="fas fa-edit"></i> Email Rewriter</h6>
+                                    <p class="card-text">Rewrite emails with different tones and purposes.</p>
+                                    <button class="btn btn-custom btn-sm" onclick="showEmailRewriter()">Open Tool</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title"><i class="fas fa-handshake"></i> Price Negotiator</h6>
+                                    <p class="card-text">AI-powered price negotiation assistance.</p>
+                                    <button class="btn btn-custom btn-sm" onclick="showPriceNegotiator()">Open Tool</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Tools Modal -->
+    <div class="modal fade" id="paymentToolsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Payment Tools</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title"><i class="fas fa-mobile-alt"></i> M-Pesa Payment</h6>
+                                    <p class="card-text">Request payments via M-Pesa STK Push.</p>
+                                    <button class="btn btn-custom btn-sm" onclick="showMpesaPayment()">Request Payment</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title"><i class="fas fa-search"></i> Transaction Status</h6>
+                                    <p class="card-text">Check M-Pesa transaction status.</p>
+                                    <button class="btn btn-custom btn-sm" onclick="showTransactionStatus()">Check Status</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global functions
+        function showAITools() {
+            new bootstrap.Modal(document.getElementById('aiToolsModal')).show();
+        }
+
+        function showPaymentTools() {
+            new bootstrap.Modal(document.getElementById('paymentToolsModal')).show();
+        }
+
+        function showEmailRewriter() {
+            // Implement email rewriter functionality
+            alert('Email Rewriter tool - Implementation needed');
+        }
+
+        function showPriceNegotiator() {
+            // Implement price negotiator functionality
+            alert('Price Negotiator tool - Implementation needed');
+        }
+
+        function showMpesaPayment() {
+            // Implement M-Pesa payment functionality
+            alert('M-Pesa Payment tool - Implementation needed');
+        }
+
+        function showTransactionStatus() {
+            // Implement transaction status functionality
+            alert('Transaction Status tool - Implementation needed');
+        }
+
+        // Toast notifications
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast align-items-center text-white bg-${type} border-0`;
+            toast.style.position = 'fixed';
+            toast.style.top = '20px';
+            toast.style.right = '20px';
+            toast.style.zIndex = '9999';
+            toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">${message}</div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            `;
+            document.body.appendChild(toast);
+            new bootstrap.Toast(toast).show();
+            setTimeout(() => toast.remove(), 5000);
+        }
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>"""
+
+with open("freelancers_bot/templates/base.html", "w") as f:
+    f.write(base_template)
+
+print("Base HTML template created!")
