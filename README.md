@@ -22,16 +22,29 @@ Monetization
 
 
 config.py - Configuration settings with M-Pesa credentials
-requirements.txt - Python dependencies
+
+requirements.txt - Python 
+
 .env.example - Environment variables template
+
 models/init.py - Database models (Client, Project, Invoice, Contract)
+
 services/mpesa_service.py - M-Pesa integration service
+
 services/ai_service.py - AI features service
+
 services/invoice_service.py - Invoice PDF generation service
+
 services/contract_service.py - Contract generation service
+
 app.py - Main Flask application with routes
+
 templates/base.html - Base HTML template
+
 templates/dashboard.html - Dashboard template
+
 templates/clients.html - Clients management template
+
 README.md - Basic README
+
 start.sh - Startup script
