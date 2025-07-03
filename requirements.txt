@@ -1,0 +1,43 @@
+# Create requirements.txt
+requirements = """
+flask==2.3.3
+flask-sqlalchemy==3.0.5
+flask-cors==4.0.0
+requests==2.31.0
+python-dotenv==1.0.0
+openai==0.28.1
+reportlab==4.0.4
+jinja2==3.1.2
+cryptography==41.0.4
+base64
+datetime
+json
+"""
+
+with open("freelancers_bot/requirements.txt", "w") as f:
+    f.write(requirements.strip())
+
+# Create .env.example
+env_example = """
+# Safaricom M-Pesa API Credentials
+MPESA_CONSUMER_KEY=your_consumer_key_here
+MPESA_CONSUMER_SECRET=your_consumer_secret_here
+MPESA_SHORTCODE=your_shortcode_here
+MPESA_PASSKEY=your_passkey_here
+MPESA_ENVIRONMENT=sandbox
+
+# OpenAI API Key for AI features
+OPENAI_API_KEY=your_openai_key_here
+
+# Database
+DATABASE_URL=sqlite:///freelancers_bot.db
+
+# Flask Settings
+SECRET_KEY=your_secret_key_here
+DEBUG=True
+"""
+
+with open("freelancers_bot/.env.example", "w") as f:
+    f.write(env_example.strip())
+
+print("Requirements and environment template created!")
