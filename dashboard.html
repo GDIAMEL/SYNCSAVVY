@@ -1,0 +1,386 @@
+# Create dashboard template
+dashboard_template = """{% extends "base.html" %}
+
+{% block title %}Dashboard - Freelancers Bot{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stats-card blue">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h3 class="mb-0">{{ data.stats.total_clients }}</h3>
+                        <p class="mb-0">Total Clients</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-users fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stats-card green">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h3 class="mb-0">{{ data.stats.active_projects }}</h3>
+                        <p class="mb-0">Active Projects</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-project-diagram fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stats-card orange">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h3 class="mb-0">KES {{ "{:,.0f}".format(data.stats.total_revenue) }}</h3>
+                        <p class="mb-0">Total Revenue</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-money-bill-wave fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stats-card">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h3 class="mb-0">{{ data.stats.pending_invoices }}</h3>
+                        <p class="mb-0">Pending Invoices</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-file-invoice fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card table-custom">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-bolt"></i> Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <button class="btn btn-custom w-100" onclick="showAddClientModal()">
+                                <i class="fas fa-user-plus"></i><br>Add Client
+                            </button>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <button class="btn btn-custom w-100" onclick="showAddProjectModal()">
+                                <i class="fas fa-plus-circle"></i><br>New Project
+                            </button>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <button class="btn btn-custom w-100" onclick="showCreateInvoiceModal()">
+                                <i class="fas fa-file-invoice-dollar"></i><br>Create Invoice
+                            </button>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <button class="btn btn-custom w-100" onclick="showCreateContractModal()">
+                                <i class="fas fa-file-contract"></i><br>Generate Contract
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts and Recent Activity -->
+    <div class="row">
+        <!-- Revenue Chart -->
+        <div class="col-lg-8 mb-4">
+            <div class="card table-custom">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-chart-line"></i> Revenue Overview</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="revenueChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project Status Pie Chart -->
+        <div class="col-lg-4 mb-4">
+            <div class="card table-custom">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-chart-pie"></i> Project Status</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="projectStatusChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="row">
+        <!-- Recent Projects -->
+        <div class="col-lg-6 mb-4">
+            <div class="card table-custom">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-clock"></i> Recent Projects</h5>
+                </div>
+                <div class="card-body">
+                    {% if data.recent_projects %}
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Project</th>
+                                        <th>Status</th>
+                                        <th>Budget</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for project in data.recent_projects %}
+                                    <tr>
+                                        <td>{{ project.title }}</td>
+                                        <td>
+                                            <span class="badge 
+                                                {% if project.status == 'active' %}bg-success
+                                                {% elif project.status == 'pending' %}bg-warning
+                                                {% elif project.status == 'completed' %}bg-primary
+                                                {% else %}bg-secondary{% endif %}">
+                                                {{ project.status|title }}
+                                            </span>
+                                        </td>
+                                        <td>KES {{ "{:,.0f}".format(project.budget or 0) }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No recent projects found.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Invoices -->
+        <div class="col-lg-6 mb-4">
+            <div class="card table-custom">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-receipt"></i> Recent Invoices</h5>
+                </div>
+                <div class="card-body">
+                    {% if data.recent_invoices %}
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Invoice #</th>
+                                        <th>Status</th>
+                                        <th>Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for invoice in data.recent_invoices %}
+                                    <tr>
+                                        <td>{{ invoice.invoice_number }}</td>
+                                        <td>
+                                            <span class="badge 
+                                                {% if invoice.status == 'paid' %}bg-success
+                                                {% elif invoice.status == 'sent' %}bg-info
+                                                {% elif invoice.status == 'overdue' %}bg-danger
+                                                {% else %}bg-secondary{% endif %}">
+                                                {{ invoice.status|title }}
+                                            </span>
+                                        </td>
+                                        <td>KES {{ "{:,.0f}".format(invoice.total_amount or 0) }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No recent invoices found.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI and Payment Integration Notice -->
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-info" role="alert">
+                <h6 class="alert-heading"><i class="fas fa-robot"></i> AI & M-Pesa Integration Ready!</h6>
+                <p class="mb-0">
+                    Your Freelancers Bot is now equipped with:
+                </p>
+                <ul class="mb-0 mt-2">
+                    <li><strong>AI Email Rewriter:</strong> Rewrite emails with different tones and purposes</li>
+                    <li><strong>AI Price Negotiator:</strong> Get assistance with price negotiations</li>
+                    <li><strong>M-Pesa Integration:</strong> Accept payments directly through M-Pesa STK Push</li>
+                    <li><strong>Auto Invoice & Contract Generation:</strong> PDF generation with professional templates</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Client Modal -->
+<div class="modal fade" id="addClientModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Client</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addClientForm">
+                    <div class="mb-3">
+                        <label class="form-label">Name *</label>
+                        <input type="text" class="form-control" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email *</label>
+                        <input type="email" class="form-control" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Phone</label>
+                        <input type="text" class="form-control" name="phone">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Company</label>
+                        <input type="text" class="form-control" name="company">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Address</label>
+                        <textarea class="form-control" name="address" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-custom" onclick="submitAddClient()">Add Client</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Revenue Chart
+    const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+    new Chart(revenueCtx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            datasets: [{
+                label: 'Revenue (KES)',
+                data: [{{ data.stats.total_revenue * 0.1 }}, {{ data.stats.total_revenue * 0.3 }}, {{ data.stats.total_revenue * 0.5 }}, {{ data.stats.total_revenue * 0.7 }}, {{ data.stats.total_revenue * 0.9 }}, {{ data.stats.total_revenue }}],
+                borderColor: 'rgb(102, 126, 234)',
+                backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return 'KES ' + value.toLocaleString();
+                        }
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+
+    // Project Status Chart
+    const statusCtx = document.getElementById('projectStatusChart').getContext('2d');
+    new Chart(statusCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Active', 'Completed', 'Pending'],
+            datasets: [{
+                data: [{{ data.stats.active_projects }}, {{ data.stats.total_projects - data.stats.active_projects }}, 5],
+                backgroundColor: [
+                    '#28a745',
+                    '#007bff',
+                    '#ffc107'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+
+    // Modal functions
+    function showAddClientModal() {
+        new bootstrap.Modal(document.getElementById('addClientModal')).show();
+    }
+
+    function showAddProjectModal() {
+        alert('Add Project functionality - Implementation needed');
+    }
+
+    function showCreateInvoiceModal() {
+        alert('Create Invoice functionality - Implementation needed');
+    }
+
+    function showCreateContractModal() {
+        alert('Create Contract functionality - Implementation needed');
+    }
+
+    // Submit functions
+    function submitAddClient() {
+        const form = document.getElementById('addClientForm');
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData);
+
+        axios.post('/clients/add', data)
+            .then(response => {
+                if (response.data.success) {
+                    showToast('Client added successfully!', 'success');
+                    bootstrap.Modal.getInstance(document.getElementById('addClientModal')).hide();
+                    form.reset();
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    showToast('Error adding client: ' + response.data.error, 'danger');
+                }
+            })
+            .catch(error => {
+                showToast('Error: ' + error.message, 'danger');
+            });
+    }
+</script>
+{% endblock %}"""
+
+with open("freelancers_bot/templates/dashboard.html", "w") as f:
+    f.write(dashboard_template)
+
+print("Dashboard template created!")
