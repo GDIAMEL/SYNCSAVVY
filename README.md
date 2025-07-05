@@ -1,359 +1,387 @@
-# FreelancersBot - AI-Powered Freelance Platform
+# Freelancers Bot - AI-Powered Freelance Management Platform
 
-**Revolutionize your freelance business with AI-powered automation**
+**Streamline your freelance business with AI-powered automation, M-Pesa integration, and professional tools**
 
-## Table of Contents
+## 🚀 Quick Start
+
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Run the application
+python app.py
+
+# Open browser to http://localhost:5000
+```
+
+## 📋 Table of Contents
 - [Overview](#overview)
 - [Features](#features)
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [Usage](#usage)
 - [API Documentation](#api-documentation)
-- [Monitoring & Maintenance](#monitoring--maintenance)
+- [Project Structure](#project-structure)
 - [Contributing](#contributing)
 - [License](#license)
 - [Support](#support)
 
-## Overview
+## 🎯 Overview
 
-FreelancersBot is a comprehensive AI-powered platform designed to streamline freelance operations, automate client interactions, and enhance productivity for freelancers and agencies.
+Freelancers Bot is a comprehensive Flask-based platform designed to streamline freelance operations with AI-powered automation, M-Pesa payment integration, and professional client management tools.
 
 ### Key Benefits
-- **AI-Powered Automation**: Intelligent client communication and project management
-- **Seamless Integration**: Works with popular freelance platforms and tools
-- **Real-time Analytics**: Track performance and optimize your workflow
-- **Scalable Architecture**: Grows with your business needs
+- **AI-Powered Tools**: Email rewriting and price negotiation assistance
+- **M-Pesa Integration**: Direct payment processing via Safaricom M-Pesa
+- **Professional Templates**: Automated invoice and contract generation
+- **Modern Dashboard**: Real-time analytics and project tracking
+- **Mobile-Responsive**: Works seamlessly on all devices
 
-## Features
+## ✨ Features
 
-### Core Features
--  **AI Chat Assistant**: Automated client communication
--  **Analytics Dashboard**: Performance tracking and insights
--  **Payment Integration**: Secure payment processing
--  **Mobile-Responsive**: Works on all devices
--  **Security**: Enterprise-grade security measures
+### 🧠 AI Capabilities
+- **Email Rewriter**: Transform emails with different tones and purposes
+- **Price Negotiator**: AI-powered negotiation assistance
+- **Smart Suggestions**: Context-aware recommendations
 
-### AI Capabilities
-- Natural language processing for client queries
-- Automated proposal generation
-- Smart project matching
-- Intelligent scheduling and reminders
+### 💰 Payment Integration
+- **M-Pesa STK Push**: Direct mobile money payments
+- **Payment Tracking**: Real-time transaction status
+- **Invoice Generation**: Professional PDF invoices
+- **Payment History**: Complete transaction records
 
-##  Installation
+### 📊 Management Tools
+- **Client Management**: Add, edit, and track clients
+- **Project Tracking**: Monitor project status and progress
+- **Invoice Management**: Generate and send invoices
+- **Contract Creation**: Professional contract templates
+- **Analytics Dashboard**: Performance insights and statistics
+
+### 📱 User Interface
+- **Modern Design**: Clean, professional interface
+- **Responsive Layout**: Works on desktop, tablet, and mobile
+- **Real-time Updates**: Live data without page refresh
+- **Toast Notifications**: User-friendly feedback system
+
+## 🛠️ Installation
 
 ### System Requirements
-- Python 3.8+
-- PostgreSQL 12+
-- Redis 6.0+
-- Nginx (for production)
+- Python 3.7+
+- SQLite (included with Python)
+- Modern web browser
 
-### Quick Start
+### Quick Installation
 
-1. **Install System Dependencies**
-```bash
-sudo apt update
-sudo apt install nginx postgresql redis-server python3-pip
-```
-
-2. **Clone Repository**
+1. **Clone Repository**
 ```bash
 git clone https://github.com/GDIAMEL/SYNCSAVVY.git
 cd SYNCSAVVY
 ```
 
-3. **Set up Virtual Environment**
+2. **Install Dependencies**
 ```bash
-python3 -m venv venv
-source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-4. **Database Setup**
+3. **Run the Application**
 ```bash
-sudo -u postgres createdb freelancersbot
-python manage.py migrate
+python app.py
 ```
 
-5. **Configure Environment Variables**
+4. **Access the Application**
+Open your browser and go to: `http://localhost:5000`
+
+### Alternative: Using the Startup Script
+
 ```bash
-cp .env.example .env
-# Edit .env with your configuration
+# Make script executable (Linux/Mac)
+chmod +x start.sh
+
+# Run startup script
+./start.sh
+
+# Or on Windows PowerShell
+.\start.sh
 ```
 
-6. **Start Development Server**
-```bash
-python manage.py runserver
-```
+## ⚙️ Configuration
 
-### Production Deployment
+### Environment Variables (Optional)
 
-1. **Install Production Dependencies**
-```bash
-sudo apt install nginx postgresql certbot python3-certbot-nginx
-```
-
-2. **Configure Gunicorn**
-```bash
-sudo systemctl enable gunicorn
-sudo systemctl start gunicorn
-```
-
-3. **Set up SSL Certificate**
-```bash
-sudo certbot --nginx -d yourdomain.com
-```
-
-4. **Configure Nginx**
-```nginx
-server {
-    listen 80;
-    server_name yourdomain.com;
-
-    location / {
-        proxy_pass http://127.0.0.1:8000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-    }
-
-    location /static/ {
-        alias /path/to/static/files/;
-    }
-}
-```
-
-##  Configuration
-
-### Environment Variables
-Create a `.env` file in your project root:
+Create a `.env` file for advanced configuration:
 
 ```env
-# Database Configuration
-DATABASE_URL=postgresql://user:password@localhost/freelancersbot
-REDIS_URL=redis://localhost:6379
+# Safaricom M-Pesa API Credentials
+MPESA_CONSUMER_KEY=your_consumer_key_here
+MPESA_CONSUMER_SECRET=your_consumer_secret_here
+MPESA_SHORTCODE=your_shortcode_here
+MPESA_PASSKEY=your_passkey_here
+MPESA_ENVIRONMENT=sandbox
 
-# API Keys
-OPENAI_API_KEY=your_openai_api_key
-STRIPE_SECRET_KEY=your_stripe_secret_key
-STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
+# OpenAI API Key for AI features
+OPENAI_API_KEY=your_openai_key_here
 
-# Application Settings
-SECRET_KEY=your_django_secret_key
-DEBUG=False
-ALLOWED_HOSTS=yourdomain.com,www.yourdomain.com
+# Database
+DATABASE_URL=sqlite:///freelancers_bot.db
 
-# Email Configuration
-EMAIL_HOST=smtp.gmail.com
-EMAIL_PORT=587
-EMAIL_USE_TLS=True
-EMAIL_HOST_USER=your_email@gmail.com
-EMAIL_HOST_PASSWORD=your_app_password
+# Flask Settings
+SECRET_KEY=your_secret_key_here
+DEBUG=True
 ```
 
-### Database Configuration
-```python
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'freelancersbot',
-        'USER': 'your_db_user',
-        'PASSWORD': 'your_db_password',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
-}
-```
+**Note**: The application works without API keys for basic functionality. M-Pesa credentials are pre-configured for testing.
 
-##  Usage
+## 📖 Usage
 
-### Starting the Application
-```bash
-# Development
-python manage.py runserver
+### Dashboard
+- View overall statistics and performance metrics
+- Access quick actions for common tasks
+- Monitor recent projects and invoices
+- View revenue charts and project status
 
-# Production
-gunicorn freelancersbot.wsgi:application --bind 0.0.0.0:8000
-```
+### Client Management
+- Add new clients with contact information
+- View all clients in a searchable table
+- Generate invoices and contracts for clients
+- Track client project history
 
-### API Endpoints
-- `GET /api/v1/projects/` - List all projects
-- `POST /api/v1/projects/` - Create new project
-- `GET /api/v1/analytics/` - Get analytics data
-- `POST /api/v1/chat/` - AI chat endpoint
+### Project Tracking
+- Create and manage projects
+- Set budgets and timelines
+- Track project status (pending, active, completed)
+- Link projects to clients and invoices
 
-### Common Commands
-```bash
-# Run migrations
-python manage.py migrate
+### Invoice Generation
+- Create professional invoices
+- Generate PDF invoices automatically
+- Request M-Pesa payments
+- Track payment status
 
-# Create superuser
-python manage.py createsuperuser
+### Contract Management
+- Generate professional contracts
+- Use customizable templates
+- Export contracts as PDF
+- Track contract status
 
-# Collect static files
-python manage.py collectstatic
+### AI Tools
+- **Email Rewriter**: Transform emails with different tones
+- **Price Negotiator**: Get AI assistance for negotiations
 
-# Run tests
-python manage.py test
-```
+### M-Pesa Integration
+- Request payments via STK Push
+- Track transaction status
+- Process payment callbacks
+- Generate payment receipts
 
-##  API Documentation
+## 🔌 API Documentation
 
-### Authentication
-All API requests require authentication via JWT tokens:
+### Core Endpoints
 
-```bash
-# Get token
-curl -X POST http://localhost:8000/api/auth/login/   -H "Content-Type: application/json"   -d '{"username": "your_username", "password": "your_password"}'
+#### Dashboard
+- `GET /` - Main dashboard with statistics
 
-# Use token in requests
-curl -X GET http://localhost:8000/api/v1/projects/   -H "Authorization: Bearer your_jwt_token"
-```
+#### Clients
+- `GET /clients` - List all clients
+- `POST /clients/add` - Add new client
+
+#### Projects
+- `GET /projects` - List all projects
+- `POST /projects/add` - Add new project
+
+#### Invoices
+- `GET /invoices` - List all invoices
+- `POST /invoices/create` - Create new invoice
+- `GET /invoices/<id>/pdf` - Generate invoice PDF
+
+#### Contracts
+- `GET /contracts` - List all contracts
+- `POST /contracts/create` - Create new contract
+- `GET /contracts/<id>/pdf` - Generate contract PDF
+
+#### M-Pesa Payments
+- `POST /payments/mpesa/stk-push` - Initiate STK Push payment
+- `POST /payments/mpesa/callback` - Handle payment callback
+
+#### AI Services
+- `POST /ai/rewrite-email` - Rewrite email with AI
+- `POST /ai/negotiate-price` - AI price negotiation
 
 ### Response Format
 ```json
 {
   "success": true,
-  "data": {},
-  "message": "Request successful",
-  "timestamp": "2025-07-05T10:30:00Z"
+  "message": "Operation completed successfully",
+  "data": {}
 }
 ```
 
-##  Monitoring & Maintenance
+## 📁 Project Structure
 
-### Key Metrics to Track
-- **Performance Metrics**
-  - API response times
-  - Database query performance
-  - Memory and CPU usage
-
-- **Business Metrics**
-  - Payment success rates
-  - AI feature usage analytics
-  - User engagement metrics
-
-- **System Health**
-  - System uptime/downtime
-  - Error rates
-  - Security events
-
-### Maintenance Schedule
-
-#### Daily Tasks
-- Verify backup integrity
-- Monitor system logs
-- Check critical alerts
-
-#### Weekly Tasks
-- Security dependency updates
-- Performance report review
-- Database maintenance
-
-#### Monthly Tasks
-- Performance optimization
-- Analytics review
-- Security audit
-
-#### Quarterly Tasks
-- Architecture review
-- Disaster recovery testing
-- Strategic planning
-
-### Backup Strategy
-```bash
-# Database backup
-pg_dump freelancersbot > backup_$(date +%Y%m%d).sql
-
-# Automated daily backups
-0 2 * * * /path/to/backup_script.sh
+```
+SYNCSAVVY/
+├── app.py                 # Main Flask application
+├── config.py              # Configuration settings
+├── requirements.txt       # Python dependencies
+├── models/init.py         # Database models
+├── services/              # Business logic services
+└── templates/             # HTML templates
 ```
 
-## Contributing
+## 🧪 Testing
 
-We welcome contributions from the community! Please follow our development workflow:
+### Manual Testing
+1. **Start the application**: `python app.py`
+2. **Access dashboard**: Navigate to `http://localhost:5000`
+3. **Test features**:
+   - Add a client
+   - Create a project
+   - Generate an invoice
+   - Create a contract
+   - Test AI tools
+   - Test M-Pesa integration
 
-### Development Workflow
+### Database
+The application uses SQLite by default, which is automatically created on first run.
+
+## 🚀 Deployment
+
+### Development
+```bash
+python app.py
+```
+
+### Production (Using Gunicorn)
+```bash
+pip install gunicorn
+gunicorn -w 4 -b 0.0.0.0:5000 app:app
+```
+
+### Docker (Optional)
+```dockerfile
+FROM python:3.9-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY . .
+EXPOSE 5000
+CMD ["python", "app.py"]
+```
+
+## 🤝 Contributing
+
+We welcome contributions! Please follow these steps:
+
 1. **Fork the repository**
-2. **Create feature branch** from `develop`
+2. **Create a feature branch**
    ```bash
    git checkout -b feature/your-feature-name
    ```
-3. **Write tests** for new features
-4. **Submit Pull Request** with:
-   - Clear description of changes
-   - Updated documentation
-   - Migration scripts (if applicable)
-   - Test coverage
+3. **Make your changes**
+4. **Test thoroughly**
+5. **Submit a pull request**
 
-### Code Standards
-- **PEP 8 Compliance**: Follow Python coding standards
-- **Type Hints**: Add type hints for all functions
-- **Docstrings**: Use Google style docstrings
-- **Test Coverage**: Maintain 80%+ test coverage
-- **Security**: Follow OWASP guidelines
+### Development Guidelines
+- Follow PEP 8 coding standards
+- Add docstrings to new functions
+- Test your changes before submitting
+- Update documentation as needed
 
-### Testing
-```bash
-# Run all tests
-python manage.py test
+## 📄 License
 
-# Run specific test
-python manage.py test apps.projects.tests.test_models
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-# Check test coverage
-coverage run --source='.' manage.py test
-coverage report
-```
-
-##  License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for full details.
-
-### MIT License Summary
-- Commercial use allowed
-- Modification allowed
-- Distribution allowed
-- Private use allowed
-- No warranty provided
-- No liability assumed
-
-## Support
-
-### Community Support
-- **GitHub Discussions**: [Join our community](https://github.com/yourusername/freelancersbot/discussions)
-- **Documentation**: [Complete documentation](https://docs.freelancersbot.com)
-- **FAQ**: [Frequently Asked Questions](https://freelancersbot.com/faq)
-
-### Priority Support
-- **Email**: support@freelancersbot.com
-- **Response Time**: 24hr response time for critical issues
-- **Support Hours**: Monday-Friday, 9 AM - 6 PM EST
+## 🆘 Support
 
 ### Getting Help
-1. Check our [FAQ](https://freelancersbot.com/faq) first
-2. Search existing [GitHub Issues](https://github.com/yourusername/freelancersbot/issues)
-3. Create a new issue with detailed information
-4. For urgent issues, contact priority support
+1. **Check the documentation** in this README
+2. **Review existing issues** on GitHub
+3. **Create a new issue** with detailed information
+
+### Common Issues
+
+#### Import Errors
+```bash
+# Make sure you're in the correct directory
+cd SYNCSAVVY
+
+# Reinstall dependencies
+pip install -r requirements.txt
+```
+
+#### Database Issues
+The SQLite database is automatically created on first run. If you encounter issues:
+```bash
+# Remove existing database (if any)
+rm freelancers_bot.db
+
+# Restart the application
+python app.py
+```
+
+#### Port Already in Use
+```bash
+# Change port in app.py
+app.run(debug=Config.DEBUG, host='0.0.0.0', port=5001)
+```
+
+## 🎉 What's Next?
+
+### Immediate Features
+- ✅ **Client Management** - Add and manage clients
+- ✅ **Project Tracking** - Monitor project progress
+- ✅ **Invoice Generation** - Create professional invoices
+- ✅ **Contract Creation** - Generate legal contracts
+- ✅ **AI Tools** - Email rewriting and negotiation
+- ✅ **M-Pesa Integration** - Direct payment processing
+
+### Future Enhancements
+- 🔄 **Multi-language Support** - Internationalization
+- 🔄 **Advanced Analytics** - Detailed reporting
+- 🔄 **Email Notifications** - Automated alerts
+- 🔄 **Mobile App** - Native mobile application
+- 🔄 **API Rate Limiting** - Enhanced security
+- 🔄 **User Authentication** - Multi-user support
+
+## 📊 Performance
+
+- **Fast Startup**: Application starts in under 5 seconds
+- **Responsive UI**: Modern, mobile-friendly interface
+- **Efficient Database**: SQLite for simplicity and performance
+- **Real-time Updates**: Live data without page refresh
+
+## 🔒 Security
+
+- **Input Validation**: All user inputs are validated
+- **SQL Injection Protection**: Using SQLAlchemy ORM
+- **XSS Protection**: Template escaping enabled
+- **CSRF Protection**: Built-in Flask protection
 
 ---
 
-##  Ready to Get Started?
+## 🚀 Ready to Get Started?
 
-Choose your path to success:
+Your Freelancers Bot is ready to revolutionize your freelance business!
 
-| Option | Description | Best For |
-|--------|-------------|----------|
-| **[Quick Start Guide](https://docs.freelancersbot.com/quickstart)** | Get up and running in 15 minutes | Developers |
-| **[Feature Demo](https://demo.freelancersbot.com)** | See the platform in action | Decision makers |
-| **[Contact Sales](https://freelancersbot.com/contact)** | Custom enterprise solutions | Large teams |
+**Quick Commands:**
+```bash
+# Install and run
+pip install -r requirements.txt
+python app.py
 
-### What's Next?
-1. **Star this repository**  to stay updated
-2. **Follow us** on social media for updates
-3. **Join our community** for support and networking
-4. **Contribute** to make FreelancersBot even better
+# Visit http://localhost:5000
+```
+
+**Features Available:**
+- 📊 **Dashboard** with real-time statistics
+- 👥 **Client Management** with professional interface
+- 📋 **Project Tracking** with status monitoring
+- 💰 **Invoice Generation** with PDF export
+- 📄 **Contract Creation** with legal templates
+- 🤖 **AI Tools** for email and negotiation
+- 📱 **M-Pesa Integration** for payments
 
 ---
 
-*Built with love by the FreelancersBot team*
+*Built with ❤️ for freelancers worldwide*
 
 **Version**: 1.0.0 | **Last Updated**: July 2025
