@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Freelancers Bot - Complete Management System</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        .sidebar {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.8);
+            border-radius: 8px;
+            margin: 2px 0;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            color: white;
+            background-color: rgba(255,255,255,0.1);
+        }
+        .stats-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .stats-card.blue {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .stats-card.green {
+            background: linear-gradient(135deg, #f093fb 0%, #43e97b 100%);
+        }
+        .stats-card.orange {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+        .btn-custom {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            border-radius: 8px;
+            padding: 0.5rem 1.5rem;
+            transition: all 0.3s;
+        }
+        .btn-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+        .table-custom {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .navbar-custom {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .content-wrapper {
+            background: #f8f9fa;
+            min-height: 100vh;
+        }
+        .page-section {
+            display: none;
+        }
+        .page-section.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <div class="text-center mb-4">
+                        <h4 class="text-white">
+                            <i class="fas fa-robot"></i> Freelancers Bot
+                        </h4>
+                    </div>
+
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" onclick="showPage('dashboard')">
+                                <i class="fas fa-tachometer-alt"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" onclick="showPage('clients')">
+                                <i class="fas fa-users"></i> Clients
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" onclick="showPage('projects')">
+                                <i class="fas fa-project-diagram"></i> Projects
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" onclick="showPage('invoices')">
+                                <i class="fas fa-file-invoice"></i> Invoices
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" onclick="showPage('contracts')">
+                                <i class="fas fa-file-contract"></i> Contracts
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" onclick="showAITools()">
+                                <i class="fas fa-brain"></i> AI Tools
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" onclick="showPaymentTools()">
+                                <i class="fas fa-credit-card"></i> Payments
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 content-wrapper">
+                <!-- Top navbar -->
+                <div class="navbar navbar-custom px-0 mb-4">
+                    <div class="d-flex justify-content-between w-100 align-items-center py-3">
+                        <h2 class="h4 mb-0" id="pageTitle">Dashboard</h2>
+                        <div class="d-flex align-items-center">
+                            <span class="me-3">Welcome, Freelancer!</span>
+                            <img src="https://via.placeholder.com/40" class="rounded-circle" alt="Profile">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dashboard Section -->
+                <div id="dashboard" class="page-section active">
+                    <!-- Statistics Cards -->
+                    <div class="row mb-4">
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="stats-card blue">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h3 class="mb-0" id="totalClients">0</h3>
+                                        <p class="mb-0">Total Clients</p>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-users fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="stats-card green">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h3 class="mb-0" id="activeProjects">0</h3>
+                                        <p class="mb-0">Active Projects</p>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-project-diagram fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="stats-card orange">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h3 class="mb-0" id="totalRevenue">KES 0</h3>
+                                        <p class="mb-0">Total Revenue</p>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-money-bill-wave fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="stats-card">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h3 class="mb-0" id="pendingInvoices">0</h3>
+                                        <p class="mb-0">Pending Invoices</p>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-file-invoice fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="card table-custom">
+                                <div class="card-header bg-primary text-white">
+                                    <h5 class="mb-0"><i class="fas fa-bolt"></i> Quick Actions</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-3 mb-3">
+                                            <button class="btn btn-custom w-100" onclick="showAddClientModal()">
+                                                <i class="fas fa-user-plus"></i><br>Add Client
+                                            </button>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <button class="btn btn-custom w-100" onclick="showAddProjectModal()">
+                                                <i class="fas fa-plus-circle"></i><br>New Project
+                                            </button>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <button class="btn btn-custom w-100" onclick="showCreateInvoiceModal()">
+                                                <i class="fas fa-file-invoice-dollar"></i><br>Create Invoice
+                                            </button>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <button class="btn btn-custom w-100" onclick="showCreateContractModal()">
+                                                <i class="fas fa-file-contract"></i><br>Generate Contract
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts -->
+                    <div class="row">
+                        <div class="col-lg-8 mb-4">
+                            <div class="card table-custom">
+                                <div class="card-header">
+                                    <h5 class="mb-0"><i class="fas fa-chart-line"></i> Revenue Overview</h5>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="revenueChart" height="300"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 mb-4">
+                            <div class="card table-custom">
+                                <div class="card-header">
+                                    <h5 class="mb-0"><i class="fas fa-chart-pie"></i> Project Status</h5>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="projectStatusChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Clients Section -->
+                <div id="clients" class="page-section">
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <button class="btn btn-custom" onclick="showAddClientModal()">
+                                <i class="fas fa-plus"></i> Add New Client
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card table-custom">
+                                <div class="card-header">
+                                    <h5 class="mb-0"><i class="fas fa-users"></i> All Clients</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover" id="clientsTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Name</th>
+                                                    <th>Email</th>
+                                                    <th>Company</th>
+                                                    <th>Phone</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td colspan="5" class="text-center text-muted">No clients found. Add your first client!</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Projects Section -->
+                <div id="projects" class="page-section">
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <button class="btn btn-custom" onclick="showAddProjectModal()">
+                                <i class="fas fa-plus"></i> Add New Project
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card table-custom">
+                                <div class="card-header">
+                                    <h5 class="mb-0"><i class="fas fa-project-diagram"></i> All Projects</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover" id="projectsTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Project</th>
+                                                    <th>Client</th>
+                                                    <th>Status</th>
+                                                    <th>Budget</th>
+                                                    <th>Timeline</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td colspan="6" class="text-center text-muted">No projects found. Add your first project!</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Invoices Section -->
+                <div id="invoices" class="page-section">
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <button class="btn btn-custom" onclick="showCreateInvoiceModal()">
+                                <i class="fas fa-plus"></i> Create New Invoice
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card table-custom">
+                                <div class="card-header">
+                                    <h5 class="mb-0"><i class="fas fa-file-invoice"></i> All Invoices</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover" id="invoicesTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Invoice #</th>
+                                                    <th>Client</th>
+                                                    <th>Amount</th>
+                                                    <th>Status</th>
+                                                    <th>Due Date</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td colspan="6" class="text-center text-muted">No invoices found. Create your first invoice!</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contracts Section -->
+                <div id="contracts" class="page-section">
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <button class="btn btn-custom" onclick="showCreateContractModal()">
+                                <i class="fas fa-plus"></i> Create New Contract
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card table-custom">
+                                <div class="card-header">
+                                    <h5 class="mb-0"><i class="fas fa-file-contract"></i> All Contracts</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover" id="contractsTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Contract #</th>
+                                                    <th>Title</th>
+                                                    <th>Client</th>
+                                                    <th>Value</th>
+                                                    <th>Status</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td colspan="6" class="text-center text-muted">No contracts found. Create your first contract!</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <!-- Add Client Modal -->
+    <div class="modal fade" id="addClientModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Client</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addClientForm">
+                        <div class="mb-3">
+                            <label class="form-label">Name *</label>
+                            <input type="text" class="form-control" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email *</label>
+                            <input type="email" class="form-control" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Phone</label>
+                            <input type="text" class="form-control" name="phone" placeholder="+254712345678">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Company</label>
+                            <input type="text" class="form-control" name="company">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Address</label>
+                            <textarea class="form-control" name="address" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-custom" onclick="submitAddClient()">Add Client</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Project Modal -->
+    <div class="modal fade" id="addProjectModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Project</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addProjectForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Project Title *</label>
+                                    <input type="text" class="form-control" name="title" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Client *</label>
+                                    <select class="form-control" name="client_id" required>
+                                        <option value="">Select Client</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" name="description" rows="3"></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Budget (KES)</label>
+                                    <input type="number" class="form-control" name="budget" min="0">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Start Date</label>
+                                    <input type="date" class="form-control" name="start_date">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">End Date</label>
+                                    <input type="date" class="form-control" name="end_date">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Status</label>
+                            <select class="form-control" name="status">
+                                <option value="pending">Pending</option>
+                                <option value="active">Active</option>
+                                <option value="completed">Completed</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-custom" onclick="submitAddProject()">Add Project</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Invoice Modal -->
+    <div class="modal fade" id="createInvoiceModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create New Invoice</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="createInvoiceForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Client *</label>
+                                    <select class="form-control" name="client_id" required>
+                                        <option value="">Select Client</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Project (Optional)</label>
+                                    <select class="form-control" name="project_id">
+                                        <option value="">Select Project</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Amount (KES) *</label>
+                                    <input type="number" class="form-control" name="amount" min="0" step="0.01" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Due Date</label>
+                                    <input type="date" class="form-control" name="due_date">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Notes</label>
+                            <textarea class="form-control" name="notes" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-custom" onclick="submitCreateInvoice()">Create Invoice</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Contract Modal -->
+    <div class="modal fade" id="createContractModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create New Contract</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="createContractForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Client *</label>
+                                    <select class="form-control" name="client_id" required>
+                                        <option value="">Select Client</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Project (Optional)</label>
+                                    <select class="form-control" name="project_id">
+                                        <option value="">Select Project</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Contract Title *</label>
+                                    <input type="text" class="form-control" name="title" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Contract Value (KES)</label>
+                                    <input type="number" class="form-control" name="value" min="0" step="0.01">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Contract Type</label>
+                            <select class="form-control" name="template_type">
+                                <option value="consulting">Consulting Agreement</option>
+                                <option value="development">Development Contract</option>
+                                <option value="maintenance">Maintenance Agreement</option>
+                                <option value="nda">Non-Disclosure Agreement</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Additional Terms</label>
+                            <textarea class="form-control" name="terms" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-custom" onclick="submitCreateContract()">Create Contract</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Tools Modal -->
+    <div class="modal fade" id="aiToolsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">AI Tools</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title"><i class="fas fa-edit"></i> Email Rewriter</h6>
+                                    <p class="card-text">Rewrite emails with different tones and purposes.</p>
+                                    <button class="btn btn-custom btn-sm" onclick="showEmailRewriter()">Open Tool</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title"><i class="fas fa-handshake"></i> Price Negotiator</h6>
+                                    <p class="card-text">AI-powered price negotiation assistance.</p>
+                                    <button class="btn btn-custom btn-sm" onclick="showPriceNegotiator()">Open Tool</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Tools Modal -->
+    <div class="modal fade" id="paymentToolsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Payment Tools</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title"><i class="fas fa-mobile-alt"></i> M-Pesa Payment</h6>
+                                    <p class="card-text">Request payments via M-Pesa STK Push.</p>
+                                    <button class="btn btn-custom btn-sm" onclick="showMpesaPayment()">Request Payment</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title"><i class="fas fa-search"></i> Transaction Status</h6>
+                                    <p class="card-text">Check M-Pesa transaction status.</p>
+                                    <button class="btn btn-custom btn-sm" onclick="showTransactionStatus()">Check Status</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Sample data storage
+        let clients = [];
+        let projects = [];
+        let invoices = [];
+        let contracts = [];
+        let nextClientId = 1;
+        let nextProjectId = 1;
+        let nextInvoiceId = 1;
+        let nextContractId = 1;
+
+        // Page navigation
+        function showPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page-section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Show selected page
+            document.getElementById(pageId).classList.add('active');
+
+            // Update active nav link
+            document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Update page title
+            const titles = {
+                'dashboard': 'Dashboard',
+                'clients': 'Clients Management',
+                'projects': 'Projects Management',
+                'invoices': 'Invoices Management',
+                'contracts': 'Contracts Management'
+            };
+            document.getElementById('pageTitle').textContent = titles[pageId] || 'Dashboard';
+
+            // Refresh data for the page
+            if (pageId === 'clients') refreshClientsTable();
+            if (pageId === 'projects') refreshProjectsTable();
+            if (pageId === 'invoices') refreshInvoicesTable();
+            if (pageId === 'contracts') refreshContractsTable();
+            if (pageId === 'dashboard') updateDashboardStats();
+        }
+
+        // Modal functions
+        function showAddClientModal() {
+            new bootstrap.Modal(document.getElementById('addClientModal')).show();
+        }
+
+        function showAddProjectModal() {
+            loadClientsForSelect('addProjectForm');
+            new bootstrap.Modal(document.getElementById('addProjectModal')).show();
+        }
+
+        function showCreateInvoiceModal() {
+            loadClientsForSelect('createInvoiceForm');
+            loadProjectsForSelect('createInvoiceForm');
+            new bootstrap.Modal(document.getElementById('createInvoiceModal')).show();
+        }
+
+        function showCreateContractModal() {
+            loadClientsForSelect('createContractForm');
+            loadProjectsForSelect('createContractForm');
+            new bootstrap.Modal(document.getElementById('createContractModal')).show();
+        }
+
+        function showAITools() {
+            new bootstrap.Modal(document.getElementById('aiToolsModal')).show();
+        }
+
+        function showPaymentTools() {
+            new bootstrap.Modal(document.getElementById('paymentToolsModal')).show();
+        }
+
+        // Load data for selects
+        function loadClientsForSelect(formId) {
+            const select = document.querySelector(`#${formId} select[name="client_id"]`);
+            select.innerHTML = '<option value="">Select Client</option>';
+            clients.forEach(client => {
+                const option = document.createElement('option');
+                option.value = client.id;
+                option.textContent = client.name;
+                select.appendChild(option);
+            });
+        }
+
+        function loadProjectsForSelect(formId) {
+            const select = document.querySelector(`#${formId} select[name="project_id"]`);
+            if (select) {
+                select.innerHTML = '<option value="">Select Project</option>';
+                projects.forEach(project => {
+                    const option = document.createElement('option');
+                    option.value = project.id;
+                    option.textContent = project.title;
+                    select.appendChild(option);
+                });
+            }
+        }
+
+        // Submit functions
+        function submitAddClient() {
+            const form = document.getElementById('addClientForm');
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData);
+
+            if (!data.name || !data.email) {
+                showToast('Name and email are required!', 'danger');
+                return;
+            }
+
+            const client = {
+                id: nextClientId++,
+                ...data,
+                created_at: new Date().toISOString()
+            };
+
+            clients.push(client);
+            showToast('Client added successfully!', 'success');
+            bootstrap.Modal.getInstance(document.getElementById('addClientModal')).hide();
+            form.reset();
+            refreshClientsTable();
+            updateDashboardStats();
+        }
+
+        function submitAddProject() {
+            const form = document.getElementById('addProjectForm');
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData);
+
+            if (!data.title || !data.client_id) {
+                showToast('Title and client are required!', 'danger');
+                return;
+            }
+
+            const client = clients.find(c => c.id == data.client_id);
+            const project = {
+                id: nextProjectId++,
+                ...data,
+                client_name: client ? client.name : 'Unknown',
+                created_at: new Date().toISOString()
+            };
+
+            projects.push(project);
+            showToast('Project added successfully!', 'success');
+            bootstrap.Modal.getInstance(document.getElementById('addProjectModal')).hide();
+            form.reset();
+            refreshProjectsTable();
+            updateDashboardStats();
+        }
+
+        function submitCreateInvoice() {
+            const form = document.getElementById('createInvoiceForm');
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData);
+
+            if (!data.client_id || !data.amount) {
+                showToast('Client and amount are required!', 'danger');
+                return;
+            }
+
+            const client = clients.find(c => c.id == data.client_id);
+            const invoice = {
+                id: nextInvoiceId++,
+                invoice_number: `INV-${String(nextInvoiceId).padStart(4, '0')}`,
+                ...data,
+                client_name: client ? client.name : 'Unknown',
+                total_amount: parseFloat(data.amount),
+                status: 'draft',
+                created_at: new Date().toISOString()
+            };
+
+            invoices.push(invoice);
+            showToast('Invoice created successfully!', 'success');
+            bootstrap.Modal.getInstance(document.getElementById('createInvoiceModal')).hide();
+            form.reset();
+            refreshInvoicesTable();
+            updateDashboardStats();
+        }
+
+        function submitCreateContract() {
+            const form = document.getElementById('createContractForm');
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData);
+
+            if (!data.client_id || !data.title) {
+                showToast('Client and title are required!', 'danger');
+                return;
+            }
+
+            const client = clients.find(c => c.id == data.client_id);
+            const contract = {
+                id: nextContractId++,
+                contract_number: `CON-${String(nextContractId).padStart(4, '0')}`,
+                ...data,
+                client_name: client ? client.name : 'Unknown',
+                value: parseFloat(data.value) || 0,
+                status: 'draft',
+                created_at: new Date().toISOString()
+            };
+
+            contracts.push(contract);
+            showToast('Contract created successfully!', 'success');
+            bootstrap.Modal.getInstance(document.getElementById('createContractModal')).hide();
+            form.reset();
+            refreshContractsTable();
+            updateDashboardStats();
+        }
+
+        // Table refresh functions
+        function refreshClientsTable() {
+            const tbody = document.querySelector('#clientsTable tbody');
+            if (clients.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No clients found. Add your first client!</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = clients.map(client => `
+                <tr>
+                    <td><strong>${client.name}</strong></td>
+                    <td>${client.email}</td>
+                    <td>${client.company || 'N/A'}</td>
+                    <td>${client.phone || 'N/A'}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary" onclick="viewClient(${client.id})">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-success" onclick="createInvoiceForClient(${client.id})">
+                            <i class="fas fa-file-invoice"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-info" onclick="createContractForClient(${client.id})">
+                            <i class="fas fa-file-contract"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function refreshProjectsTable() {
+            const tbody = document.querySelector('#projectsTable tbody');
+            if (projects.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">No projects found. Add your first project!</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = projects.map(project => `
+                <tr>
+                    <td><strong>${project.title}</strong></td>
+                    <td>${project.client_name}</td>
+                    <td>
+                        <span class="badge ${getStatusBadgeClass(project.status)}">
+                            ${project.status.charAt(0).toUpperCase() + project.status.slice(1)}
+                        </span>
+                    </td>
+                    <td>KES ${(project.budget || 0).toLocaleString()}</td>
+                    <td>${project.start_date && project.end_date ? `${project.start_date} - ${project.end_date}` : 'TBD'}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary" onclick="viewProject(${project.id})">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-success" onclick="createInvoiceForProject(${project.id})">
+                            <i class="fas fa-file-invoice"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-info" onclick="createContractForProject(${project.id})">
+                            <i class="fas fa-file-contract"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function refreshInvoicesTable() {
+            const tbody = document.querySelector('#invoicesTable tbody');
+            if (invoices.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">No invoices found. Create your first invoice!</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = invoices.map(invoice => `
+                <tr>
+                    <td><strong>${invoice.invoice_number}</strong></td>
+                    <td>${invoice.client_name}</td>
+                    <td>KES ${(invoice.total_amount || 0).toLocaleString()}</td>
+                    <td>
+                        <span class="badge ${getInvoiceStatusBadgeClass(invoice.status)}">
+                            ${invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
+                        </span>
+                    </td>
+                    <td>${invoice.due_date || 'N/A'}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary" onclick="viewInvoice(${invoice.id})">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-success" onclick="generatePDF('invoice', ${invoice.id})">
+                            <i class="fas fa-file-pdf"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-warning" onclick="requestPayment(${invoice.id})">
+                            <i class="fas fa-credit-card"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function refreshContractsTable() {
+            const tbody = document.querySelector('#contractsTable tbody');
+            if (contracts.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">No contracts found. Create your first contract!</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = contracts.map(contract => `
+                <tr>
+                    <td><strong>${contract.contract_number}</strong></td>
+                    <td>${contract.title}</td>
+                    <td>${contract.client_name}</td>
+                    <td>KES ${(contract.value || 0).toLocaleString()}</td>
+                    <td>
+                        <span class="badge ${getContractStatusBadgeClass(contract.status)}">
+                            ${contract.status.charAt(0).toUpperCase() + contract.status.slice(1)}
+                        </span>
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary" onclick="viewContract(${contract.id})">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-success" onclick="generatePDF('contract', ${contract.id})">
+                            <i class="fas fa-file-pdf"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-info" onclick="sendContract(${contract.id})">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Helper functions
+        function getStatusBadgeClass(status) {
+            const classes = {
+                'active': 'bg-success',
+                'pending': 'bg-warning',
+                'completed': 'bg-primary',
+                'cancelled': 'bg-secondary'
+            };
+            return classes[status] || 'bg-secondary';
+        }
+
+        function getInvoiceStatusBadgeClass(status) {
+            const classes = {
+                'paid': 'bg-success',
+                'sent': 'bg-info',
+                'overdue': 'bg-danger',
+                'draft': 'bg-secondary'
+            };
+            return classes[status] || 'bg-secondary';
+        }
+
+        function getContractStatusBadgeClass(status) {
+            const classes = {
+                'signed': 'bg-success',
+                'sent': 'bg-info',
+                'draft': 'bg-secondary',
+                'pending': 'bg-warning'
+            };
+            return classes[status] || 'bg-secondary';
+        }
+
+        function updateDashboardStats() {
+            document.getElementById('totalClients').textContent = clients.length;
+            document.getElementById('activeProjects').textContent = projects.filter(p => p.status === 'active').length;
+
+            const totalRevenue = invoices.filter(i => i.status === 'paid').reduce((sum, i) => sum + (i.total_amount || 0), 0);
+            document.getElementById('totalRevenue').textContent = `KES ${totalRevenue.toLocaleString()}`;
+
+            document.getElementById('pendingInvoices').textContent = invoices.filter(i => i.status !== 'paid').length;
+        }
+
+        // Action functions
+        function viewClient(clientId) {
+            const client = clients.find(c => c.id === clientId);
+            if (client) {
+                alert(`Client Details:\n\nName: ${client.name}\nEmail: ${client.email}\nCompany: ${client.company || 'N/A'}\nPhone: ${client.phone || 'N/A'}`);
+            }
+        }
+
+        function viewProject(projectId) {
+            const project = projects.find(p => p.id === projectId);
+            if (project) {
+                alert(`Project Details:\n\nTitle: ${project.title}\nClient: ${project.client_name}\nStatus: ${project.status}\nBudget: KES ${(project.budget || 0).toLocaleString()}`);
+            }
+        }
+
+        function viewInvoice(invoiceId) {
+            const invoice = invoices.find(i => i.id === invoiceId);
+            if (invoice) {
+                alert(`Invoice Details:\n\nNumber: ${invoice.invoice_number}\nClient: ${invoice.client_name}\nAmount: KES ${(invoice.total_amount || 0).toLocaleString()}\nStatus: ${invoice.status}`);
+            }
+        }
+
+        function viewContract(contractId) {
+            const contract = contracts.find(c => c.id === contractId);
+            if (contract) {
+                alert(`Contract Details:\n\nNumber: ${contract.contract_number}\nTitle: ${contract.title}\nClient: ${contract.client_name}\nValue: KES ${(contract.value || 0).toLocaleString()}\nStatus: ${contract.status}`);
+            }
+        }
+
+        function createInvoiceForClient(clientId) {
+            showCreateInvoiceModal();
+            setTimeout(() => {
+                document.querySelector('#createInvoiceForm select[name="client_id"]').value = clientId;
+            }, 100);
+        }
+
+        function createContractForClient(clientId) {
+            showCreateContractModal();
+            setTimeout(() => {
+                document.querySelector('#createContractForm select[name="client_id"]').value = clientId;
+            }, 100);
+        }
+
+        function createInvoiceForProject(projectId) {
+            const project = projects.find(p => p.id === projectId);
+            if (project) {
+                showCreateInvoiceModal();
+                setTimeout(() => {
+                    document.querySelector('#createInvoiceForm select[name="client_id"]').value = project.client_id;
+                    document.querySelector('#createInvoiceForm select[name="project_id"]').value = projectId;
+                    if (project.budget) {
+                        document.querySelector('#createInvoiceForm input[name="amount"]').value = project.budget;
+                    }
+                }, 100);
+            }
+        }
+
+        function createContractForProject(projectId) {
+            const project = projects.find(p => p.id === projectId);
+            if (project) {
+                showCreateContractModal();
+                setTimeout(() => {
+                    document.querySelector('#createContractForm select[name="client_id"]').value = project.client_id;
+                    document.querySelector('#createContractForm select[name="project_id"]').value = projectId;
+                    document.querySelector('#createContractForm input[name="title"]').value = project.title + ' Contract';
+                    if (project.budget) {
+                        document.querySelector('#createContractForm input[name="value"]').value = project.budget;
+                    }
+                }, 100);
+            }
+        }
+
+        function generatePDF(type, id) {
+            showToast(`${type.charAt(0).toUpperCase() + type.slice(1)} PDF generated successfully!`, 'success');
+        }
+
+        function requestPayment(invoiceId) {
+            showToast('Payment request sent via M-Pesa!', 'info');
+        }
+
+        function sendContract(contractId) {
+            showToast('Contract sent to client!', 'info');
+        }
+
+        // AI and Payment tool functions
+        function showEmailRewriter() {
+            alert('Email Rewriter AI Tool - This would integrate with your AI service to help rewrite emails with different tones and purposes.');
+        }
+
+        function showPriceNegotiator() {
+            alert('Price Negotiator AI Tool - This would provide AI-powered assistance for price negotiations with clients.');
+        }
+
+        function showMpesaPayment() {
+            alert('M-Pesa Payment Tool - This would integrate with M-Pesa API to request payments via STK Push.');
+        }
+
+        function showTransactionStatus() {
+            alert('Transaction Status Tool - This would check the status of M-Pesa transactions.');
+        }
+
+        // Toast notifications
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast align-items-center text-white bg-${type} border-0`;
+            toast.style.position = 'fixed';
+            toast.style.top = '20px';
+            toast.style.right = '20px';
+            toast.style.zIndex = '9999';
+            toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">${message}</div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            `;
+            document.body.appendChild(toast);
+            new bootstrap.Toast(toast).show();
+            setTimeout(() => toast.remove(), 5000);
+        }
+
+        // Initialize charts
+        function initializeCharts() {
+            // Revenue Chart
+            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+            new Chart(revenueCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Revenue (KES)',
+                        data: [10000, 25000, 40000, 55000, 70000, 85000],
+                        borderColor: 'rgb(102, 126, 234)',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return 'KES ' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+
+            // Project Status Chart
+            const statusCtx = document.getElementById('projectStatusChart').getContext('2d');
+            new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Active', 'Completed', 'Pending'],
+                    datasets: [{
+                        data: [5, 12, 3],
+                        backgroundColor: [
+                            '#28a745',
+                            '#007bff',
+                            '#ffc107'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCharts();
+            updateDashboardStats();
+
+            // Add some sample data
+            clients.push({
+                id: nextClientId++,
+                name: 'John Doe',
+                email: 'john@example.com',
+                company: 'Tech Corp',
+                phone: '+254712345678',
+                created_at: new Date().toISOString()
+            });
+
+            projects.push({
+                id: nextProjectId++,
+                title: 'Website Development',
+                client_id: 1,
+                client_name: 'John Doe',
+                status: 'active',
+                budget: 50000,
+                start_date: '2024-01-01',
+                end_date: '2024-03-01',
+                created_at: new Date().toISOString()
+            });
+
+            updateDashboardStats();
+        });
+    </script>
+</body>
+</html>
