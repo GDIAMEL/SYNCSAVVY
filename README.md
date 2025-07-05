@@ -2,7 +2,7 @@
 
 **Streamline your freelance business with AI-powered automation, M-Pesa integration, and professional tools**
 
-## 🚀 Quick Start
+## Quick Start
 
 ```bash
 # Install dependencies
@@ -14,7 +14,7 @@ python app.py
 # Open browser to http://localhost:5000
 ```
 
-## 📋 Table of Contents
+## Table of Contents
 - [Overview](#overview)
 - [Features](#features)
 - [Installation](#installation)
@@ -26,7 +26,7 @@ python app.py
 - [License](#license)
 - [Support](#support)
 
-## 🎯 Overview
+## Overview
 
 Freelancers Bot is a comprehensive Flask-based platform designed to streamline freelance operations with AI-powered automation, M-Pesa payment integration, and professional client management tools.
 
@@ -37,33 +37,33 @@ Freelancers Bot is a comprehensive Flask-based platform designed to streamline f
 - **Modern Dashboard**: Real-time analytics and project tracking
 - **Mobile-Responsive**: Works seamlessly on all devices
 
-## ✨ Features
+## Features
 
-### 🧠 AI Capabilities
+### AI Capabilities
 - **Email Rewriter**: Transform emails with different tones and purposes
 - **Price Negotiator**: AI-powered negotiation assistance
 - **Smart Suggestions**: Context-aware recommendations
 
-### 💰 Payment Integration
+### Payment Integration
 - **M-Pesa STK Push**: Direct mobile money payments
 - **Payment Tracking**: Real-time transaction status
 - **Invoice Generation**: Professional PDF invoices
 - **Payment History**: Complete transaction records
 
-### 📊 Management Tools
+### Management Tools
 - **Client Management**: Add, edit, and track clients
 - **Project Tracking**: Monitor project status and progress
 - **Invoice Management**: Generate and send invoices
 - **Contract Creation**: Professional contract templates
 - **Analytics Dashboard**: Performance insights and statistics
 
-### 📱 User Interface
+### User Interface
 - **Modern Design**: Clean, professional interface
 - **Responsive Layout**: Works on desktop, tablet, and mobile
 - **Real-time Updates**: Live data without page refresh
 - **Toast Notifications**: User-friendly feedback system
 
-## 🛠️ Installation
+## Installation
 
 ### System Requirements
 - Python 3.7+
@@ -104,7 +104,7 @@ chmod +x start.sh
 .\start.sh
 ```
 
-## ⚙️ Configuration
+## Configuration
 
 ### Environment Variables (Optional)
 
@@ -131,7 +131,7 @@ DEBUG=True
 
 **Note**: The application works without API keys for basic functionality. M-Pesa credentials are pre-configured for testing.
 
-## 📖 Usage
+## Usage
 
 ### Dashboard
 - View overall statistics and performance metrics
@@ -173,7 +173,7 @@ DEBUG=True
 - Process payment callbacks
 - Generate payment receipts
 
-## 🔌 API Documentation
+## API Documentation
 
 ### Core Endpoints
 
@@ -215,7 +215,7 @@ DEBUG=True
 }
 ```
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 SYNCSAVVY/
@@ -227,7 +227,7 @@ SYNCSAVVY/
 └── templates/             # HTML templates
 ```
 
-## 🧪 Testing
+## Testing
 
 ### Manual Testing
 1. **Start the application**: `python app.py`
@@ -243,7 +243,7 @@ SYNCSAVVY/
 ### Database
 The application uses SQLite by default, which is automatically created on first run.
 
-## 🚀 Deployment
+## Deployment
 
 ### Development
 ```bash
@@ -267,7 +267,7 @@ EXPOSE 5000
 CMD ["python", "app.py"]
 ```
 
-## 🤝 Contributing
+## Contributing
 
 We welcome contributions! Please follow these steps:
 
@@ -286,11 +286,11 @@ We welcome contributions! Please follow these steps:
 - Test your changes before submitting
 - Update documentation as needed
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🆘 Support
+## Support
 
 ### Getting Help
 1. **Check the documentation** in this README
@@ -324,32 +324,32 @@ python app.py
 app.run(debug=Config.DEBUG, host='0.0.0.0', port=5001)
 ```
 
-## 🎉 What's Next?
+## What's Next?
 
 ### Immediate Features
-- ✅ **Client Management** - Add and manage clients
-- ✅ **Project Tracking** - Monitor project progress
-- ✅ **Invoice Generation** - Create professional invoices
-- ✅ **Contract Creation** - Generate legal contracts
-- ✅ **AI Tools** - Email rewriting and negotiation
-- ✅ **M-Pesa Integration** - Direct payment processing
+- **Client Management** - Add and manage clients
+- **Project Tracking** - Monitor project progress
+- **Invoice Generation** - Create professional invoices
+- **Contract Creation** - Generate legal contracts
+- **AI Tools** - Email rewriting and negotiation
+- **M-Pesa Integration** - Direct payment processing
 
 ### Future Enhancements
-- 🔄 **Multi-language Support** - Internationalization
-- 🔄 **Advanced Analytics** - Detailed reporting
-- 🔄 **Email Notifications** - Automated alerts
-- 🔄 **Mobile App** - Native mobile application
-- 🔄 **API Rate Limiting** - Enhanced security
-- 🔄 **User Authentication** - Multi-user support
+- **Multi-language Support** - Internationalization
+- **Advanced Analytics** - Detailed reporting
+- **Email Notifications** - Automated alerts
+- **Mobile App** - Native mobile application
+- **API Rate Limiting** - Enhanced security
+- **User Authentication** - Multi-user support
 
-## 📊 Performance
+## Performance
 
 - **Fast Startup**: Application starts in under 5 seconds
 - **Responsive UI**: Modern, mobile-friendly interface
 - **Efficient Database**: SQLite for simplicity and performance
 - **Real-time Updates**: Live data without page refresh
 
-## 🔒 Security
+## Security
 
 - **Input Validation**: All user inputs are validated
 - **SQL Injection Protection**: Using SQLAlchemy ORM
@@ -358,7 +358,7 @@ app.run(debug=Config.DEBUG, host='0.0.0.0', port=5001)
 
 ---
 
-## 🚀 Ready to Get Started?
+## Ready to Get Started?
 
 Your Freelancers Bot is ready to revolutionize your freelance business!
 
@@ -372,16 +372,16 @@ python app.py
 ```
 
 **Features Available:**
-- 📊 **Dashboard** with real-time statistics
-- 👥 **Client Management** with professional interface
-- 📋 **Project Tracking** with status monitoring
-- 💰 **Invoice Generation** with PDF export
-- 📄 **Contract Creation** with legal templates
-- 🤖 **AI Tools** for email and negotiation
-- 📱 **M-Pesa Integration** for payments
+- **Dashboard** with real-time statistics
+- **Client Management** with professional interface
+- **Project Tracking** with status monitoring
+- **Invoice Generation** with PDF export
+- **Contract Creation** with legal templates
+- **AI Tools** for email and negotiation
+- **M-Pesa Integration** for payments
 
 ---
 
-*Built with ❤️ for freelancers worldwide*
+*Built with love for freelancers worldwide*
 
 **Version**: 1.0.0 | **Last Updated**: July 2025
