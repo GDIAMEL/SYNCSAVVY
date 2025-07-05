@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+
+{% block title %}Invoices - Freelancers Bot{% endblock %}
+{% block page_title %}Invoices Management{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <button class="btn btn-custom" onclick="showCreateInvoiceModal()">
+                <i class="fas fa-plus"></i> Create New Invoice
+            </button>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card table-custom">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-file-invoice"></i> All Invoices</h5>
+                </div>
+                <div class="card-body">
+                    {% if invoices %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Invoice #</th>
+                                        <th>Client</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th>Due Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for invoice in invoices %}
+                                    <tr>
+                                        <td><strong>{{ invoice.invoice_number }}</strong></td>
+                                        <td>{{ invoice.client_name }}</td>
+                                        <td>KES {{ "{:,.0f}".format(invoice.total_amount or 0) }}</td>
+                                        <td>
+                                            <span class="badge 
+                                                {% if invoice.status == 'paid' %}bg-success
+                                                {% elif invoice.status == 'sent' %}bg-info
+                                                {% elif invoice.status == 'overdue' %}bg-danger
+                                                {% else %}bg-secondary{% endif %}">
+                                                {{ invoice.status|title }}
+                                            </span>
+                                        </td>
+                                        <td>{{ invoice.due_date[:10] if invoice.due_date else 'N/A' }}</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" onclick="viewInvoice({{ invoice.id }})">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-success" onclick="generatePDF({{ invoice.id }})">
+                                                <i class="fas fa-file-pdf"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-warning" onclick="requestPayment({{ invoice.id }})">
+                                                <i class="fas fa-credit-card"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-file-invoice fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No invoices found</h5>
+                            <p class="text-muted">Create your first invoice to get started!</p>
+                            <button class="btn btn-custom" onclick="showCreateInvoiceModal()">
+                                <i class="fas fa-plus"></i> Create First Invoice
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Invoice Modal -->
+<div class="modal fade" id="createInvoiceModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create New Invoice</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createInvoiceForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Client *</label>
+                                <select class="form-control" name="client_id" required>
+                                    <option value="">Select Client</option>
+                                    <!-- Client options will be loaded dynamically -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Project (Optional)</label>
+                                <select class="form-control" name="project_id">
+                                    <option value="">Select Project</option>
+                                    <!-- Project options will be loaded dynamically -->
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Amount (KES) *</label>
+                                <input type="number" class="form-control" name="amount" min="0" step="0.01" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Due Date</label>
+                                <input type="date" class="form-control" name="due_date">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Notes</label>
+                        <textarea class="form-control" name="notes" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-custom" onclick="submitCreateInvoice()">Create Invoice</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function showCreateInvoiceModal() {
+        // Load clients and projects for dropdowns
+        loadClients();
+        loadProjects();
+        new bootstrap.Modal(document.getElementById('createInvoiceModal')).show();
+    }
+
+    function loadClients() {
+        axios.get('/api/clients')
+            .then(response => {
+                const select = document.querySelector('select[name="client_id"]');
+                select.innerHTML = '<option value="">Select Client</option>';
+                
+                response.data.clients.forEach(client => {
+                    const option = document.createElement('option');
+                    option.value = client.id;
+                    option.textContent = client.name;
+                    select.appendChild(option);
+                });
+            })
+            .catch(error => {
+                showToast('Error loading clients: ' + error.message, 'danger');
+            });
+    }
+
+    function loadProjects() {
+        axios.get('/api/projects')
+            .then(response => {
+                const select = document.querySelector('select[name="project_id"]');
+                select.innerHTML = '<option value="">Select Project</option>';
+                
+                response.data.projects.forEach(project => {
+                    const option = document.createElement('option');
+                    option.value = project.id;
+                    option.textContent = project.title;
+                    select.appendChild(option);
+                });
+            })
+            .catch(error => {
+                showToast('Error loading projects: ' + error.message, 'danger');
+            });
+    }
+
+    function submitCreateInvoice() {
+        const form = document.getElementById('createInvoiceForm');
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData);
+
+        axios.post('/invoices/create', data)
+            .then(response => {
+                if (response.data.success) {
+                    showToast('Invoice created successfully!', 'success');
+                    bootstrap.Modal.getInstance(document.getElementById('createInvoiceModal')).hide();
+                    form.reset();
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    showToast('Error creating invoice: ' + response.data.error, 'danger');
+                }
+            })
+            .catch(error => {
+                showToast('Error: ' + error.message, 'danger');
+            });
+    }
+
+    function viewInvoice(invoiceId) {
+        alert(`View invoice ${invoiceId} - Implementation needed`);
+    }
+
+    function generatePDF(invoiceId) {
+        axios.get(`/invoices/${invoiceId}/pdf`)
+            .then(response => {
+                if (response.data.success) {
+                    showToast('PDF generated successfully!', 'success');
+                    // Open PDF in new window
+                    window.open(response.data.file_path, '_blank');
+                } else {
+                    showToast('Error generating PDF: ' + response.data.error, 'danger');
+                }
+            })
+            .catch(error => {
+                showToast('Error: ' + error.message, 'danger');
+            });
+    }
+
+    function requestPayment(invoiceId) {
+        alert(`Request payment for invoice ${invoiceId} - Implementation needed`);
+    }
+</script>
+{% endblock %} 

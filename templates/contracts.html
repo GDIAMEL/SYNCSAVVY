@@ -1,0 +1,242 @@
+{% extends "base.html" %}
+
+{% block title %}Contracts - Freelancers Bot{% endblock %}
+{% block page_title %}Contracts Management{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <button class="btn btn-custom" onclick="showCreateContractModal()">
+                <i class="fas fa-plus"></i> Create New Contract
+            </button>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card table-custom">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-file-contract"></i> All Contracts</h5>
+                </div>
+                <div class="card-body">
+                    {% if contracts %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Contract #</th>
+                                        <th>Title</th>
+                                        <th>Client</th>
+                                        <th>Value</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for contract in contracts %}
+                                    <tr>
+                                        <td><strong>{{ contract.contract_number }}</strong></td>
+                                        <td>{{ contract.title }}</td>
+                                        <td>{{ contract.client_name }}</td>
+                                        <td>KES {{ "{:,.0f}".format(contract.value or 0) }}</td>
+                                        <td>
+                                            <span class="badge 
+                                                {% if contract.status == 'signed' %}bg-success
+                                                {% elif contract.status == 'sent' %}bg-info
+                                                {% elif contract.status == 'draft' %}bg-secondary
+                                                {% else %}bg-warning{% endif %}">
+                                                {{ contract.status|title }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" onclick="viewContract({{ contract.id }})">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-success" onclick="generatePDF({{ contract.id }})">
+                                                <i class="fas fa-file-pdf"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-info" onclick="sendContract({{ contract.id }})">
+                                                <i class="fas fa-paper-plane"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-file-contract fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No contracts found</h5>
+                            <p class="text-muted">Create your first contract to get started!</p>
+                            <button class="btn btn-custom" onclick="showCreateContractModal()">
+                                <i class="fas fa-plus"></i> Create First Contract
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Contract Modal -->
+<div class="modal fade" id="createContractModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create New Contract</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createContractForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Client *</label>
+                                <select class="form-control" name="client_id" required>
+                                    <option value="">Select Client</option>
+                                    <!-- Client options will be loaded dynamically -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Project (Optional)</label>
+                                <select class="form-control" name="project_id">
+                                    <option value="">Select Project</option>
+                                    <!-- Project options will be loaded dynamically -->
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Contract Title *</label>
+                                <input type="text" class="form-control" name="title" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Contract Value (KES)</label>
+                                <input type="number" class="form-control" name="value" min="0" step="0.01">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Contract Type</label>
+                        <select class="form-control" name="template_type">
+                            <option value="consulting">Consulting Agreement</option>
+                            <option value="development">Development Contract</option>
+                            <option value="maintenance">Maintenance Agreement</option>
+                            <option value="nda">Non-Disclosure Agreement</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Additional Terms</label>
+                        <textarea class="form-control" name="terms" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-custom" onclick="submitCreateContract()">Create Contract</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function showCreateContractModal() {
+        // Load clients and projects for dropdowns
+        loadClients();
+        loadProjects();
+        new bootstrap.Modal(document.getElementById('createContractModal')).show();
+    }
+
+    function loadClients() {
+        axios.get('/api/clients')
+            .then(response => {
+                const select = document.querySelector('select[name="client_id"]');
+                select.innerHTML = '<option value="">Select Client</option>';
+                
+                response.data.clients.forEach(client => {
+                    const option = document.createElement('option');
+                    option.value = client.id;
+                    option.textContent = client.name;
+                    select.appendChild(option);
+                });
+            })
+            .catch(error => {
+                showToast('Error loading clients: ' + error.message, 'danger');
+            });
+    }
+
+    function loadProjects() {
+        axios.get('/api/projects')
+            .then(response => {
+                const select = document.querySelector('select[name="project_id"]');
+                select.innerHTML = '<option value="">Select Project</option>';
+                
+                response.data.projects.forEach(project => {
+                    const option = document.createElement('option');
+                    option.value = project.id;
+                    option.textContent = project.title;
+                    select.appendChild(option);
+                });
+            })
+            .catch(error => {
+                showToast('Error loading projects: ' + error.message, 'danger');
+            });
+    }
+
+    function submitCreateContract() {
+        const form = document.getElementById('createContractForm');
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData);
+
+        axios.post('/contracts/create', data)
+            .then(response => {
+                if (response.data.success) {
+                    showToast('Contract created successfully!', 'success');
+                    bootstrap.Modal.getInstance(document.getElementById('createContractModal')).hide();
+                    form.reset();
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    showToast('Error creating contract: ' + response.data.error, 'danger');
+                }
+            })
+            .catch(error => {
+                showToast('Error: ' + error.message, 'danger');
+            });
+    }
+
+    function viewContract(contractId) {
+        alert(`View contract ${contractId} - Implementation needed`);
+    }
+
+    function generatePDF(contractId) {
+        axios.get(`/contracts/${contractId}/pdf`)
+            .then(response => {
+                if (response.data.success) {
+                    showToast('PDF generated successfully!', 'success');
+                    // Open PDF in new window
+                    window.open(response.data.file_path, '_blank');
+                } else {
+                    showToast('Error generating PDF: ' + response.data.error, 'danger');
+                }
+            })
+            .catch(error => {
+                showToast('Error: ' + error.message, 'danger');
+            });
+    }
+
+    function sendContract(contractId) {
+        alert(`Send contract ${contractId} - Implementation needed`);
+    }
+</script>
+{% endblock %} 

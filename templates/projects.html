@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+
+{% block title %}Projects - Freelancers Bot{% endblock %}
+{% block page_title %}Projects Management{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <button class="btn btn-custom" onclick="showAddProjectModal()">
+                <i class="fas fa-plus"></i> Add New Project
+            </button>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card table-custom">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-project-diagram"></i> All Projects</h5>
+                </div>
+                <div class="card-body">
+                    {% if projects %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Project</th>
+                                        <th>Client</th>
+                                        <th>Status</th>
+                                        <th>Budget</th>
+                                        <th>Timeline</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for project in projects %}
+                                    <tr>
+                                        <td><strong>{{ project.title }}</strong></td>
+                                        <td>{{ project.client_name }}</td>
+                                        <td>
+                                            <span class="badge 
+                                                {% if project.status == 'active' %}bg-success
+                                                {% elif project.status == 'pending' %}bg-warning
+                                                {% elif project.status == 'completed' %}bg-primary
+                                                {% else %}bg-secondary{% endif %}">
+                                                {{ project.status|title }}
+                                            </span>
+                                        </td>
+                                        <td>KES {{ "{:,.0f}".format(project.budget or 0) }}</td>
+                                        <td>
+                                            {% if project.start_date and project.end_date %}
+                                                {{ project.start_date[:10] }} - {{ project.end_date[:10] }}
+                                            {% else %}
+                                                TBD
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" onclick="viewProject({{ project.id }})">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-success" onclick="createInvoice({{ project.id }})">
+                                                <i class="fas fa-file-invoice"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-info" onclick="createContract({{ project.id }})">
+                                                <i class="fas fa-file-contract"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-project-diagram fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No projects found</h5>
+                            <p class="text-muted">Add your first project to get started!</p>
+                            <button class="btn btn-custom" onclick="showAddProjectModal()">
+                                <i class="fas fa-plus"></i> Add First Project
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Project Modal -->
+<div class="modal fade" id="addProjectModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Project</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addProjectForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Project Title *</label>
+                                <input type="text" class="form-control" name="title" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Client *</label>
+                                <select class="form-control" name="client_id" required>
+                                    <option value="">Select Client</option>
+                                    <!-- Client options will be loaded dynamically -->
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" name="description" rows="3"></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label class="form-label">Budget (KES)</label>
+                                <input type="number" class="form-control" name="budget" min="0">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label class="form-label">Start Date</label>
+                                <input type="date" class="form-control" name="start_date">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label class="form-label">End Date</label>
+                                <input type="date" class="form-control" name="end_date">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Status</label>
+                        <select class="form-control" name="status">
+                            <option value="pending">Pending</option>
+                            <option value="active">Active</option>
+                            <option value="completed">Completed</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-custom" onclick="submitAddProject()">Add Project</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function showAddProjectModal() {
+        // Load clients for dropdown
+        loadClients();
+        new bootstrap.Modal(document.getElementById('addProjectModal')).show();
+    }
+
+    function loadClients() {
+        axios.get('/api/clients')
+            .then(response => {
+                const select = document.querySelector('select[name="client_id"]');
+                select.innerHTML = '<option value="">Select Client</option>';
+                
+                response.data.clients.forEach(client => {
+                    const option = document.createElement('option');
+                    option.value = client.id;
+                    option.textContent = client.name;
+                    select.appendChild(option);
+                });
+            })
+            .catch(error => {
+                showToast('Error loading clients: ' + error.message, 'danger');
+            });
+    }
+
+    function submitAddProject() {
+        const form = document.getElementById('addProjectForm');
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData);
+
+        axios.post('/projects/add', data)
+            .then(response => {
+                if (response.data.success) {
+                    showToast('Project added successfully!', 'success');
+                    bootstrap.Modal.getInstance(document.getElementById('addProjectModal')).hide();
+                    form.reset();
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    showToast('Error adding project: ' + response.data.error, 'danger');
+                }
+            })
+            .catch(error => {
+                showToast('Error: ' + error.message, 'danger');
+            });
+    }
+
+    function viewProject(projectId) {
+        alert(`View project ${projectId} - Implementation needed`);
+    }
+
+    function createInvoice(projectId) {
+        alert(`Create invoice for project ${projectId} - Implementation needed`);
+    }
+
+    function createContract(projectId) {
+        alert(`Create contract for project ${projectId} - Implementation needed`);
+    }
+</script>
+{% endblock %} 
