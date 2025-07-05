@@ -57,8 +57,8 @@ sudo apt install nginx postgresql redis-server python3-pip
 
 2. **Clone Repository**
 ```bash
-git clone https://github.com/yourusername/freelancersbot.git
-cd freelancersbot
+git clone https://github.com/GDIAMEL/SYNCSAVVY.git
+cd SYNCSAVVY
 ```
 
 3. **Set up Virtual Environment**
