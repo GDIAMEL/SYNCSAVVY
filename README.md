@@ -1,5 +1,4 @@
-# Create comprehensive README file
-readme_content = '''# 🤖 Freelancers Bot - Complete Business Management System
+'''# 🤖 Freelancers Bot - Complete Business Management System
 
 **A comprehensive AI-powered freelance business management platform with integrated M-Pesa payments, automated invoicing, contract generation, and intelligent communication tools.**
 
